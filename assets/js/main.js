@@ -5,7 +5,7 @@ let prefetchQueue = [];
 // Fetch one random user
 async function fetchUser() {
   try {
-    const response = await fetch('https://randomuser.me/api/?gender=female');
+    const response = await fetch('https://randomuser.me/api/');
     const data = await response.json();
     return data.results[0];
   } catch (error) {
