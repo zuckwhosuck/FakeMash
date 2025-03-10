@@ -1,0 +1,137 @@
+    /* Base Styling */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Roboto", sans-serif;
+    }
+    body {
+      background-color: #f5f5f5;
+      padding: 20px;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      border-radius: 10px;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .comparison-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .images-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .image-card {
+      width: 200px;
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .image-card:hover {
+      transform: scale(1.03);
+    }
+    .image-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .image-info {
+      padding: 10px;
+    }
+    .vote-btn {
+      background-color: #4A90E2;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+    .vote-btn:hover {
+      background-color: #357ABD;
+    }
+    .stats-container {
+      background-color: #fff;
+      margin: 0 auto;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+      width: 100%;
+      max-width: 800px;
+    }
+    .stats-title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .stats-list {
+      list-style: none;
+      padding: 0;
+    }
+    .stats-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .stats-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+    /* Dark Mode Styling */
+    .dark-mode {
+      background-color: #333;
+      color: #f5f5f5;
+    }
+    .dark-mode header {
+      background: linear-gradient(135deg, #2C3E50, #4A90E2);
+      color: #fff;
+    }
+    .dark-mode .image-card {
+      background-color: #444;
+    }
+    .dark-mode .stats-container {
+      background-color: #444;
+    }
+    .dark-mode .vote-btn {
+      background-color: #2C3E50;
+    }
+    .dark-mode .vote-btn:hover {
+      background-color: #1A252F;
+    }
+    /* Dark Mode Toggle Button */
+    #darkModeToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4A90E2;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #darkModeToggle:hover {
+      background-color: #357ABD;
+    }
