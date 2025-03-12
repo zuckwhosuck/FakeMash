@@ -200,6 +200,21 @@
                 max-width: 300px;
             }
         }
+        #pages{
+        position:fixed;
+        bottom: 20px;
+        right: 123px;
+        background-color: #4A90E2;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        }
+        #pages:hover {
+        background-color: #357ABD;
+        }
     </style>
 </head>
 <body>
@@ -222,6 +237,9 @@
             <!-- Stats will be populated dynamically -->
         </ul>
     </div>
+   
+    <a href="Movie-Recommender.html"><button id="pages">Movie🍿</button></a>
+    <a href="index.html"><button id="pages" style="right: 212px;">FakeMash😉</button></a>
     
     <script>
         // Array of image data - these would ideally come from an API or database
@@ -449,8 +467,7 @@
                 [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
-        }
-        
+        }   
         // Start the app when the page loads
         window.addEventListener('DOMContentLoaded', initApp);
     </script>

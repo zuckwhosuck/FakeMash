@@ -50,6 +50,22 @@
             gap: 20px;
             padding: 20px;
         }
+        
+        #pages{
+        position:fixed;
+        bottom: 20px;
+        right: 123px;
+        background-color: #4A90E2;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        }
+        #pages:hover {
+        background-color: #357ABD;
+        }
     </style>
 </head>
 <body>
@@ -59,6 +75,10 @@
         </div>
         <div id="results" class="movie-grid"></div>
     </div>
+  
+    <a href="cricket-comparison-app.html"><button id="pages">Cricket🏏</button></a>
+    <a href="index.html"><button id="pages" style="right: 219px;">FakeMash😉</button></a>
+    
 
     <script>
         const API_KEY = 'b7e9f674'; // Get free API key from omdbapi.com
@@ -127,6 +147,8 @@
         });
 
         searchInput.addEventListener('input', searchMovies);
+    
+   
     </script>
 </body>
 </html>

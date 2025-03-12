@@ -135,3 +135,18 @@
     #darkModeToggle:hover {
       background-color: #357ABD;
     }
+    #pages{
+      position:fixed;
+      bottom: 20px;
+      right: 123px;
+      background-color: #4A90E2;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #pages:hover {
+      background-color: #357ABD;
+    }
