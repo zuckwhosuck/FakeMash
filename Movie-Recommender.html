@@ -66,32 +66,35 @@
         #pages:hover {
         background-color: #357ABD;
         }
+        .movie-details {
+            display: none;
+        }
+
+        .movie-details.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search movies by title, actor, or genre...">
+            <input type="text" id="searchInput" placeholder="Search movies or actors..." list="suggestions">
+            <datalist id="suggestions">
+            </datalist>
         </div>
         <div id="results" class="movie-grid"></div>
+        <h2>Recommendations</h2>
+        <div id="recommendations" class="movie-grid"></div>
     </div>
-  
+ 
     <a href="cricket-comparison-app.html"><button id="pages">Cricket🏏</button></a>
     <a href="index.html"><button id="pages" style="right: 219px;">FakeMash😉</button></a>
     
 
+
+    
     <script>
-        const API_KEY = 'b7e9f674'; // Get free API key from omdbapi.com
-        const LOCAL_DATA = [
-            {
-                Title: "The Dark Knight",
-                Year: "2008",
-                Genre: "Action, Crime, Drama",
-                Actors: "Christian Bale, Heath Ledger",
-                Poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg"
-            },
-            // Add more backup entries here
-        ];
+const API_KEY = '21c79684f080f27f12b9a185e50e4d3a';
 
         const searchInput = document.getElementById('searchInput');
         const resultsDiv = document.getElementById('results');
@@ -105,48 +108,154 @@
             };
         }
 
-        async function fetchMovies(searchTerm) {
+         async function fetchMovies(searchTerm) {
+            let url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}`;
+            
             try {
-                const response = await fetch(
-                    `https://www.omdbapi.com/?s=${searchTerm}&apikey=${API_KEY}`
-                );
-                const data = await response.json();
-                return data.Search || [];
+                // Search for movies by title
+                const movieResponse = await fetch(url);
+                const movieData = await movieResponse.json();
+                const movieResults = movieData.results || [];
+
+                // Search for people (actors/directors)
+                const personUrl = `https://api.themoviedb.org/3/search/person?api_key=${API_KEY}&query=${searchTerm}`;
+                const personResponse = await fetch(personUrl);
+                const personData = await personResponse.json();
+                const personResults = personData.results || [];
+
+                // Fetch movies for each person
+                const movieCreditsPromises = personResults.map(async person => {
+                    const movieCreditsUrl = `https://api.themoviedb.org/3/person/${person.id}/movie_credits?api_key=${API_KEY}`;
+                    const movieCreditsResponse = await fetch(movieCreditsUrl);
+                    const movieCreditsData = await movieCreditsResponse.json();
+
+                    const cast = movieCreditsData.cast || [];
+                    const crew = movieCreditsData.crew || [];
+                    const directorMovies = crew.filter(credit => credit.job === "Director");
+
+                    return [...cast, ...directorMovies];
+                });
+
+                const movieCredits = await Promise.all(movieCreditsPromises);
+                const personMovies = movieCredits.flat().map(credit => ({
+                    ...credit,
+                    poster_path: credit.poster_path,
+                    title: credit.title,
+                    release_date: credit.release_date
+                }));
+
+                // Combine movie and person results
+                const combinedResults = [...movieResults, ...personMovies];
+
+                return combinedResults;
             } catch (error) {
                 console.error('API Error:', error);
-                return LOCAL_DATA.filter(movie => 
-                    movie.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    movie.Genre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    movie.Actors.toLowerCase().includes(searchTerm.toLowerCase())
-                );
+                return [];
+            }
+        }
+
+        const recommendationsDiv = document.getElementById('recommendations');
+
+        async function fetchSimilarMovies(movieId) {
+            const url = `https://api.themoviedb.org/3/movie/${movieId}/similar?api_key=${API_KEY}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.results || [];
+            } catch (error) {
+                console.error('API Error:', error);
+                return [];
             }
         }
 
         function displayMovies(movies) {
             resultsDiv.innerHTML = '';
+            recommendationsDiv.innerHTML = '';
+
             movies.forEach(movie => {
                 const movieCard = document.createElement('div');
                 movieCard.className = 'movie-card animate__animated animate__fadeIn';
                 movieCard.innerHTML = `
-                    <img src="${movie.Poster}" class="movie-poster" alt="${movie.Title}">
-                    <h3>${movie.Title}</h3>
-                    <p>Year: ${movie.Year}</p>
-                    <p>Genre: ${movie.Genre}</p>
-                    ${movie.Actors ? `<p>Actors: ${movie.Actors}</p>` : ''}
+                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="movie-poster" alt="${movie.title}">
+                    <h3>${movie.title}</h3>
+                    <div class="movie-details">
+                        <p>Year: ${movie.release_date ? movie.release_date.substring(0, 4) : 'N/A'}</p>
+                        <p>Rating: ${movie.vote_average}</p>
+                        <p>${movie.overview}</p>
+                    </div>
                 `;
+                movieCard.addEventListener('click', () => {
+                    movieCard.querySelector('.movie-details').classList.toggle('show');
+                });
                 resultsDiv.appendChild(movieCard);
+            });
+
+            if (movies.length > 0) {
+                const movieId = movies[0].id;
+                fetchSimilarMovies(movieId)
+                    .then(similarMovies => {
+                        similarMovies.forEach(movie => {
+                            const movieCard = document.createElement('div');
+                            movieCard.className = 'movie-card animate__animated animate__fadeIn';
+                            movieCard.innerHTML = `
+                                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="movie-poster" alt="${movie.title}">
+                                <h3>${movie.title}</h3>
+                                <div class="movie-details">
+                                    <p>Year: ${movie.release_date ? movie.release_date.substring(0, 4) : 'N/A'}</p>
+                                    <p>Rating: ${movie.vote_average}</p>
+                                    <p>${movie.overview}</p>
+                                </div>
+                            `;
+                            movieCard.addEventListener('click', () => {
+                                movieCard.querySelector('.movie-details').classList.toggle('show');
+                            });
+                            recommendationsDiv.appendChild(movieCard);
+                        });
+                    });
+            }
+        }
+
+        const suggestionsList = document.getElementById('suggestions');
+
+        async function fetchSuggestions(searchTerm) {
+            const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.results || [];
+            } catch (error) {
+                console.error('API Error:', error);
+                return [];
+            }
+        }
+
+        function populateSuggestions(suggestions) {
+            suggestionsList.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const option = document.createElement('option');
+                option.value = suggestion.title;
+                suggestionsList.appendChild(option);
             });
         }
 
         const searchMovies = debounce(async (e) => {
             const searchTerm = e.target.value;
-            if (searchTerm.length < 3) return;
+            if (searchTerm.length < 3) {
+                suggestionsList.innerHTML = '';
+                return;
+            }
+
+            const suggestions = await fetchSuggestions(searchTerm);
+            populateSuggestions(suggestions);
             
             const movies = await fetchMovies(searchTerm);
             displayMovies(movies);
         });
 
         searchInput.addEventListener('input', searchMovies);
+
+        async function fetchGenres() {
+        }
     
    
     </script>
